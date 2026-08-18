@@ -27,13 +27,19 @@ src/
     layout.tsx      Shell: ink header, accent footer, fonts, boot script
     globals.css     Riso tokens, type scale, field/layout classes, motion
     page.tsx        /  hero, about, three project entries, timeline
+    cv/page.tsx     /cv  download + inline view of the CV PDF, Person JSON-LD
   components/
     field.tsx           Full-bleed band; paper | ink | hot
     theme-toggle.tsx    Stateless light/dark switch
     reveal-controller.tsx  Drives every [data-reveal] element
   lib/site.ts       Name, URL, description, nav — one source of truth for
-                    metadata, JSON-LD, sitemap and llms.txt
+                    metadata, JSON-LD, sitemap and llms.txt. `asset()` adds
+                    the deploy's base path to anything served from public/
   mdx-components.tsx  Global MDX element mapping
+public/
+  Olga_Maslova_CV_2026_ENG2.pdf   The CV. /cv links and embeds this file;
+                    replace it and update the constant at the top of
+                    src/app/cv/page.tsx
 ```
 
 ## Design system — "Riso"

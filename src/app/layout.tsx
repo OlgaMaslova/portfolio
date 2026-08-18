@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Archivo, IBM_Plex_Mono } from "next/font/google";
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { RevealController } from "@/components/reveal-controller";
+import { SiteNav } from "@/components/site-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { liveNav, site } from "@/lib/site";
+import { mailto, site } from "@/lib/site";
 import "./globals.css";
 
 // Self-hosted at build time by next/font — no request to Google at runtime,
@@ -73,25 +73,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         {/* Ink field 1 of 3. */}
         <header className="field-ink sticky top-0 z-40 py-[14px]">
           <div className="frame flex flex-wrap items-center justify-between gap-4">
-            <nav
-              aria-label="Primary"
-              className="flex flex-wrap items-baseline gap-x-6 gap-y-1"
-            >
-              <Link href="/" className="t-meta">
-                {site.name}
-              </Link>
-              {liveNav.length > 0 && (
-                <ul className="flex flex-wrap gap-x-5 gap-y-1">
-                  {liveNav.map((item) => (
-                    <li key={item.href}>
-                      <Link href={item.href} className="t-meta t-on-mut">
-                        {item.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </nav>
+            <SiteNav />
             <ThemeToggle />
           </div>
         </header>
@@ -116,7 +98,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </ul>
             <div className="mt-12 border-t border-current/55 pt-5">
               <p className="t-meta t-on-mut">
-                {site.name} · AI helped
+                <a href={mailto}>{site.name}</a> · AI helped
               </p>
             </div>
           </div>

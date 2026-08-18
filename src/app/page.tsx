@@ -23,7 +23,7 @@ const ENTRIES: Entry[] = [
     fill: "hot",
     title: "Document understanding, measured",
     body: "Everyone has an opinion about RAG versus long context. This one you can run: six extraction strategies answer the same question about the same document, side by side, with cost, latency and a graded answer for every cell.",
-    cont: "Approach and model turn out to be two separate decisions. Measured over the same questions and documents, a clear winner is  deepseek-v4-flash on 5 approaches over 6. Which approach you picked is what decides whether the cheaper model is a saving or a downgrade.",
+    cont: "Approach and model are two separate decisions, and people collapse them into one. Which strategy you pick decides whether a cheaper model is a saving or a downgrade. And prompt caching is a cost transform, not a retrieval strategy — it changes what an approach costs, not what it can find. Every run is reproducible, priced from published rates.",
     stack: "Next.js · Python · LLM · RAG · Context extraction · Caching",
     links: [
       { href: "https://olgamaslova.github.io/doc-understanding/", label: "Live demo" },
@@ -56,12 +56,21 @@ const ENTRIES: Entry[] = [
   },
 ];
 
-/** Companies only — the research and PhD years live on the CV, not here. */
+/**
+ * Newest first, so the eye lands on the current role. The interim research
+ * posts live on the CV; this keeps the four companies and where it started.
+ */
 const TIMELINE = [
   {
-    years: "2017–2020",
-    role: "Data Scientist / SWE",
-    org: "AboutGoods",
+    years: "2025–2026",
+    role: "Co-founder / CTO",
+    org: "Supernaut AI",
+    current: true,
+  },
+  {
+    years: "2023–2025",
+    role: "Senior Full-Stack Engineer",
+    org: "Thesify",
     current: false,
   },
   {
@@ -71,16 +80,16 @@ const TIMELINE = [
     current: false,
   },
   {
-    years: "2023–2025",
-    role: "Senior Full-Stack Engineer",
-    org: "Thesify",
+    years: "2017–2020",
+    role: "Data Scientist / SWE",
+    org: "AboutGoods",
     current: false,
   },
   {
-    years: "2025–2026",
-    role: "Co-founder / CTO",
-    org: "Supernaut AI",
-    current: true,
+    years: "2009–2013",
+    role: "PhD in Physics",
+    org: "Université Paris-Sud",
+    current: false,
   },
 ] as const;
 
@@ -107,7 +116,7 @@ export default function Home() {
       <section className="field-paper pb-[var(--space-field)] pt-[var(--space-hero)]">
         <div className="frame">
           <h1 className="t-statement" data-reveal>
-            I build AI systems that run in <span className="text-hot">production.</span> Always curious.
+            I build AI systems that run in <span className="text-hot">production</span> and measure them until they earn it.
           </h1>
         </div>
         <div className="mt-[var(--space-entry)] hero-rule" />
@@ -120,7 +129,7 @@ export default function Home() {
         </p>
         <p className="t-lead mt-8" data-reveal>
           I take products from messy problem to reliable production system — end to end. I work across product, architecture, full-stack engineering, DevOps, and ML, using AI throughout the development process while keeping ownership and judgment to myself.
-          Ten years of production software, as a tech lead and co-founder. Physics PhD first—because, why not?
+          Ten years of production software, as a tech lead and co-founder. Physics PhD first.
         </p>
       </Field>
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo, IBM_Plex_Mono } from "next/font/google";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { RevealController } from "@/components/reveal-controller";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { liveNav, site } from "@/lib/site";
@@ -48,7 +49,7 @@ export const metadata: Metadata = {
  */
 const BOOT = `(function(){var d=document.documentElement;try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")d.dataset.theme=t;var a=localStorage.getItem("accent");if(a)d.dataset.accent=a}catch(e){}d.classList.add("reveal-ready")})()`;
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${archivo.variable} ${plexMono.variable}`}>
       <head>

@@ -25,14 +25,14 @@ const plexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — ${site.role}`,
+    default: site.name,
     template: `%s — ${site.name}`,
   },
   description: site.description,
   openGraph: {
     type: "website",
     siteName: site.name,
-    title: `${site.name} — ${site.role}`,
+    title: site.name,
     description: site.description,
     url: site.url,
     locale: "en_GB",
@@ -51,7 +51,14 @@ const BOOT = `(function(){var d=document.documentElement;try{var t=localStorage.
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${archivo.variable} ${plexMono.variable}`}>
+    <html
+      lang="en"
+      className={`${archivo.variable} ${plexMono.variable}`}
+      // BOOT mutates this element before React hydrates — the theme/accent
+      // datasets and the `reveal-ready` class. Without this, React reports a
+      // mismatch on <html> and discards the boot script's work.
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: BOOT }} />
       </head>

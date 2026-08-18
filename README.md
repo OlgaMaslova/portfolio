@@ -26,7 +26,7 @@ src/
   app/
     layout.tsx      Shell: ink header, accent footer, fonts, boot script
     globals.css     Riso tokens, type scale, field/layout classes, motion
-    page.tsx        /  (design skeleton — placeholder copy)
+    page.tsx        /  hero, about, three project entries, timeline
   components/
     field.tsx           Full-bleed band; paper | ink | hot
     theme-toggle.tsx    Stateless light/dark switch

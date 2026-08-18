@@ -4,11 +4,10 @@
  */
 export const site = {
   name: "Olga Maslova",
-  role: "Software engineer",
   // Canonical origin. Override with NEXT_PUBLIC_SITE_URL when a custom domain lands.
   url: (process.env.NEXT_PUBLIC_SITE_URL ?? "https://olgamaslova.github.io").replace(/\/$/, ""),
   description:
-    "Software engineer building AI systems that hold up in production — retrieval, agents, and the evaluation harnesses that keep them honest.",
+    "I build AI systems that run in production, and measure them until they earn it. Physics PhD first, ten years of shipping since. Always curious.",
   github: "https://github.com/OlgaMaslova",
   linkedin: "https://www.linkedin.com/in/olgamaslova23/",
   // `live: false` keeps a planned route out of the nav until its page exists,

@@ -1,26 +1,90 @@
 import { Field } from "@/components/field";
 
 /**
- * Design skeleton. Every string here is a placeholder marker — real copy lands
- * with the content pass. The point is that each slot in the design spec has a
- * home and the token system drives all of it.
+ * Entries carry their own copy. Fill follows the design spec: accent for 01,
+ * ink for 02, 2px ink outline from 03 on. `stat` is the spec's optional
+ * left-column numeral — no entry uses it yet.
  */
 
-const ENTRIES = [
-  { n: "01", fill: "hot" },
-  { n: "02", fill: "ink" },
-  { n: "03", fill: "outline" },
-  { n: "04", fill: "outline" },
-] as const;
+type Entry = {
+  n: string;
+  fill: "hot" | "ink" | "outline";
+  title: string;
+  stat?: { value: string; label: string };
+  body: string;
+  cont: string;
+  stack: string;
+  links?: { href: string; label: string }[];
+};
 
+const ENTRIES: Entry[] = [
+  {
+    n: "01",
+    fill: "hot",
+    title: "Document understanding, measured",
+    body: "Everyone has an opinion about RAG versus long context. This one you can run: six extraction strategies answer the same question about the same document, side by side, with cost, latency and a graded answer for every cell.",
+    cont: "Approach and model turn out to be two separate decisions. Measured over the same questions and documents, a clear winner is  deepseek-v4-flash on 5 approaches over 6. Which approach you picked is what decides whether the cheaper model is a saving or a downgrade.",
+    stack: "Next.js · Python · LLM · RAG · Context extraction · Caching",
+    links: [
+      { href: "https://olgamaslova.github.io/doc-understanding/", label: "Live demo" },
+      { href: "https://github.com/OlgaMaslova/doc-understanding", label: "Source" },
+    ],
+  },
+  {
+    n: "02",
+    fill: "ink",
+    title: "Detour, a recommendation network",
+    body: "Finding somewhere to eat means wading through anonymous stars, paid placement and reviews written by strangers. Detour drops the average entirely: every place on it is one a member put their name behind and said why, in their own words. No ads, no paid listings, no editors, no catalogue.",
+    cont: "A recommendation is worth what the person making it is worth, so the product keeps that person visible. Invitations are what put somebody inside your circle, which means taste travels along lines people already trust rather than pooling into a score. Members publish straight to their circle — and anyone can browse the cities, the map and the feed before joining one.",
+    stack: "TypeScript · Vite · PocketBase · Automatic data augmentation ",
+    links: [
+      { href: "https://takedetour.app", label: "Live app" },
+      { href: "https://github.com/OlgaMaslova/detour", label: "Source" },
+    ],
+  },
+  {
+    n: "03",
+    fill: "outline",
+    title: "Talked Down, a daily negotiation game",
+    body: "Talking to an AI character usually has no stakes, because the model has nothing to lose and folds the moment you push. Talked Down gives it something to defend: a secret floor price, a patience budget, and a private list of the arguments that actually move it. One ranked play per day, a score out of 100, and a percentile against everyone else who got the same scenario.",
+    cont: "The engineering is in making the character unable to cheat. Every turn runs decide → validate → speak: the model proposes a move, the server clamps it against the secret spec, and a second call writes the reply once the number is already settled — so the words and the price can never contradict each other. The scenarios write themselves too. A nightly pipeline generates candidates, rejects domains that repeat recent days, runs a prompt-injection battery against the actor, and publishes only what survives.",
+    stack: "TypeScript · Vite · PocketBase · LLM · Adversarial testing",
+    links: [
+      { href: "https://talkeddown-app.supernaut.to", label: "Play it" },
+      { href: "https://github.com/OlgaMaslova/talked-down", label: "Source" },
+    ],
+  },
+];
+
+/** Companies only — the research and PhD years live on the CV, not here. */
 const TIMELINE = [
-  { year: "2021", current: false },
-  { year: "2023", current: false },
-  { year: "2024", current: false },
-  { year: "2026", current: true },
+  {
+    years: "2017–2020",
+    role: "Data Scientist / SWE",
+    org: "AboutGoods",
+    current: false,
+  },
+  {
+    years: "2020–2023",
+    role: "Tech Lead",
+    org: "Smarter Data Labs",
+    current: false,
+  },
+  {
+    years: "2023–2025",
+    role: "Senior Full-Stack Engineer",
+    org: "Thesify",
+    current: false,
+  },
+  {
+    years: "2025–2026",
+    role: "Co-founder / CTO",
+    org: "Supernaut AI",
+    current: true,
+  },
 ] as const;
 
-function TitleBlock({ n, fill }: { n: string; fill: "hot" | "ink" | "outline" }) {
+function TitleBlock({ n, fill, title }: Pick<Entry, "n" | "fill" | "title">) {
   const skin =
     fill === "hot"
       ? "bg-hot text-onhot"
@@ -31,7 +95,7 @@ function TitleBlock({ n, fill }: { n: string; fill: "hot" | "ink" | "outline" })
   return (
     <div className={`${skin} p-6`}>
       <p className="t-meta opacity-70">Project {n}</p>
-      <h3 className="t-project-title mt-3">Title</h3>
+      <h3 className="t-project-title mt-3">{title}</h3>
     </div>
   );
 }
@@ -39,13 +103,10 @@ function TitleBlock({ n, fill }: { n: string; fill: "hot" | "ink" | "outline" })
 export default function Home() {
   return (
     <>
-      {/* Hero — paper, mono eyebrow, statement at 23ch, then the accent rule. */}
+      {/* Hero — paper, statement at 23ch, then the accent rule. */}
       <section className="field-paper pb-[var(--space-field)] pt-[var(--space-hero)]">
         <div className="frame">
-          <p className="t-eyebrow text-mut" data-reveal>
-            Founding engineer — AI systems
-          </p>
-          <h1 className="t-statement mt-6" data-reveal>
+          <h1 className="t-statement" data-reveal>
             I build AI systems that run in <span className="text-hot">production.</span> Always curious.
           </h1>
         </div>
@@ -72,22 +133,33 @@ export default function Home() {
               className={`cols py-[var(--space-entry)] ${i > 0 ? "rule-hair" : ""}`}
             >
               <div className="flex flex-col gap-6" data-reveal>
-                <TitleBlock n={entry.n} fill={entry.fill} />
-                <div>
-                  <p className="t-numeral">0000</p>
-                  <p className="t-meta text-mut mt-1">Stat label</p>
-                </div>
+                <TitleBlock n={entry.n} fill={entry.fill} title={entry.title} />
+                {entry.stat && (
+                  <div>
+                    <p className="t-numeral">{entry.stat.value}</p>
+                    <p className="t-meta text-mut mt-1">{entry.stat.label}</p>
+                  </div>
+                )}
               </div>
               <div data-reveal>
-                <p className="t-body">
-                  Body, first paragraph of an entry. Full foreground colour,
-                  capped at 52 characters per line.
-                </p>
-                <p className="t-body-cont mt-5">
-                  Continuation paragraph, muted, same measure. Everything that
-                  is not prose is set in mono.
-                </p>
-                <p className="t-meta text-ink mt-8">Stack · placeholder</p>
+                <p className="t-body">{entry.body}</p>
+                <p className="t-body-cont mt-5">{entry.cont}</p>
+                {entry.links && (
+                  <ul className="mt-8 flex flex-wrap gap-3">
+                    {entry.links.map((link) => (
+                      <li key={link.href}>
+                        <a
+                          className="btn-ghost inline-block"
+                          href={link.href}
+                          rel="noopener noreferrer"
+                        >
+                          {link.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <p className="t-meta text-ink mt-8">{entry.stack}</p>
               </div>
             </div>
           ))}
@@ -97,12 +169,12 @@ export default function Home() {
       {/* Ink field 3 of 3 — the timeline. Budget spent. */}
       <Field tone="ink">
         <p className="t-eyebrow t-on-mut" data-reveal>
-          Timeline · placeholder
+          Timeline
         </p>
-        <ol className="mt-10 grid gap-x-8 gap-y-10 [grid-template-columns:repeat(auto-fit,minmax(190px,1fr))]">
+        <ol className="mt-10 grid gap-x-8 gap-y-10 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
           {TIMELINE.map((item) => (
             <li
-              key={item.year}
+              key={item.org}
               className="border-t-2 pt-4"
               style={{
                 borderTopColor: item.current
@@ -112,9 +184,10 @@ export default function Home() {
               data-reveal
             >
               <p className={`t-numeral ${item.current ? "text-hot" : ""}`}>
-                {item.year}
+                {item.years}
               </p>
-              <p className="t-meta t-on-mut mt-2">Caption placeholder</p>
+              <p className="t-meta mt-3">{item.org}</p>
+              <p className="t-meta t-on-mut mt-1">{item.role}</p>
             </li>
           ))}
         </ol>

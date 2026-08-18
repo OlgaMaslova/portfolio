@@ -1,34 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portfolio site
 
-## Getting Started
+One URL for job applications, and the home of the `doc-understanding` findings
+write-up. Full brief: [portfolio-spec.md](portfolio-spec.md).
 
-First, run the development server:
+## Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Next.js 16 (App Router) with `output: "export"` — every route is prerendered to
+static HTML at build time and served from GitHub Pages. No server, no database,
+no CMS. TypeScript, Tailwind v4, content in MDX.
+
+## Commands
+
+| Command | What it does |
+|---|---|
+| `pnpm dev` | Dev server on http://localhost:3000 |
+| `pnpm build` | Static export to `out/` |
+| `pnpm preview` | Build, then serve `out/` as a plain static host would |
+| `pnpm lint` | ESLint |
+| `pnpm typecheck` | `tsc --noEmit` |
+
+## Layout
+
+```
+src/
+  app/
+    layout.tsx      Shell: ink header, accent footer, fonts, boot script
+    globals.css     Riso tokens, type scale, field/layout classes, motion
+    page.tsx        /  (design skeleton — placeholder copy)
+  components/
+    field.tsx           Full-bleed band; paper | ink | hot
+    theme-toggle.tsx    Stateless light/dark switch
+    reveal-controller.tsx  Drives every [data-reveal] element
+  lib/site.ts       Name, URL, description, nav — one source of truth for
+                    metadata, JSON-LD, sitemap and llms.txt
+  mdx-components.tsx  Global MDX element mapping
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Design system — "Riso"
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Implements `design_spec.html`. Two chromatics only: `--ink` (ultramarine,
+hue 262) and `--hot` (the accent). Paper and text share hue 92, so the neutrals
+read warm against both. Dark mode keeps the hues and lifts lightness — it is
+not a hue shift.
 
-## Learn More
+| Token | Light | Dark |
+|---|---|---|
+| `--bg` | `oklch(0.955 0.028 92)` | `oklch(0.215 0.055 262)` |
+| `--fg` | `oklch(0.26 0.09 262)` | `oklch(0.955 0.025 92)` |
+| `--mut` | `oklch(0.46 0.07 262)` | `oklch(0.775 0.035 92)` |
+| `--line` | `oklch(0.82 0.045 92)` | `oklch(0.36 0.055 262)` |
+| `--ink` | `oklch(0.42 0.20 262)` | `oklch(0.55 0.19 262)` |
+| `--hot` | `oklch(0.70 0.19 45)` | `oklch(0.75 0.18 45)` |
 
-To learn more about Next.js, take a look at the following resources:
+Every token is exposed to Tailwind through `@theme inline`, so `bg-ink`,
+`text-mut` and friends compile to `var(--…)` and a theme switch repaints the
+whole page in one step.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Knobs.** `data-theme` (`light`/`dark`) and `data-accent`
+(`tangerine` default, `magenta`, `lime`, `cyan`) on `<html>`. Both are replayed
+before first paint by the boot script in the layout.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Geometry.** No radii, no shadows. 1px hairline `--line` or 2–3px ink.
+Sections are full-bleed; only the inner `.frame` is capped at 1560px.
 
-## Deploy on Vercel
+**Type.** Archivo (statement/title/body) and IBM Plex Mono (every non-prose
+string). Self-hosted at build time by `next/font`, so there is no request to
+Google at runtime and no layout shift. Scale lives in the `.t-*` classes.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Motion.** `data-reveal` elements fade and rise on intersection — 0.75s, 80ms
+sibling stagger capped at 5, with a 4s failsafe. The hero rule wipes in once on
+load. Hover is colour only. The hidden state is gated behind a `.reveal-ready`
+class set by the boot script, so a JS failure leaves the page fully visible
+rather than blank; `prefers-reduced-motion` disables all of it.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Contrast.** Measured with WCAG 2.x on every on-colour pair. One known
+failure: light-theme text on an accent field is `2.78:1` (tangerine), below AA
+even at display sizes. `--onhot` in `globals.css` carries the accessible
+alternative as a commented one-liner. Everything else passes AA.
+
+`site.nav` entries carry a `live` flag. A planned route stays out of the nav
+until its page exists, so the deployed site never links to a 404.
+
+## Deploying
+
+Push to `main`. [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)
+typechecks, lints, builds, and publishes `out/` to GitHub Pages.
+
+This project site publishes at **https://olgamaslova.github.io/portfolio/**.
+The deployment workflow supplies its `/portfolio` base path and canonical URL.
+One-time setup: repo Settings → Pages → Source → **GitHub Actions**.
+
+The canonical origin is `site.url` in [`src/lib/site.ts`](src/lib/site.ts) —
+OpenGraph tags, JSON-LD and the sitemap all derive from it. Override it with
+`NEXT_PUBLIC_SITE_URL` at build time if a custom domain lands.

@@ -1,1 +1,379 @@
 @import "tailwindcss";
+
+/* ==========================================================================
+   RISO — design tokens
+   Two chromatics only: --ink (ultramarine, hue 262) and --hot (the accent).
+   Paper and text share hue 92 so the neutrals read warm against both.
+   Dark mode keeps the same hues and lifts lightness by 0.05–0.13. It is not
+   a hue shift.
+   ========================================================================== */
+
+:root {
+  /* Accent, light / dark. Swap with data-accent on <html>. */
+  --hot-light: oklch(0.7 0.19 45);
+  --hot-dark: oklch(0.75 0.18 45);
+
+  --bg: oklch(0.955 0.028 92);
+  --fg: oklch(0.26 0.09 262);
+  --mut: oklch(0.46 0.07 262);
+  --line: oklch(0.82 0.045 92);
+  --ink: oklch(0.42 0.2 262);
+  --onink: oklch(0.97 0.025 92);
+  --hot: var(--hot-light);
+
+  /* Text on an accent field. The design spec's near-white sits at 2.78:1 on
+     tangerine — below AA even for display sizes. Swap the two lines below to
+     take dark-on-accent instead: 6.46:1 tangerine, 5.31:1 magenta,
+     9.70:1 lime, 7.47:1 cyan, and no new colour enters the palette. */
+  --onhot: oklch(0.99 0.02 92);
+  /* --onhot: oklch(0.19 0.05 262); */
+
+  /* Space. Air is the point: nothing tighter. */
+  --gutter: clamp(18px, 4vw, 64px);
+  --page-max: 1560px;
+  --col-gap: clamp(28px, 5vw, 88px);
+  --space-hero: clamp(64px, 11vw, 190px);
+  --space-field: clamp(56px, 9vw, 150px);
+  --space-entry: clamp(44px, 6vw, 104px);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  color-scheme: light;
+}
+
+/* Accent variants ---------------------------------------------------------- */
+:root[data-accent="magenta"] {
+  --hot-light: oklch(0.66 0.22 355);
+  --hot-dark: oklch(0.72 0.2 355);
+}
+:root[data-accent="lime"] {
+  --hot-light: oklch(0.78 0.19 128);
+  --hot-dark: oklch(0.84 0.19 128);
+}
+:root[data-accent="cyan"] {
+  --hot-light: oklch(0.7 0.14 210);
+  --hot-dark: oklch(0.78 0.14 210);
+}
+
+/* Dark. Declared twice: once for the system preference, once for an explicit
+   choice from the header button, so the toggle wins in both directions. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: oklch(0.215 0.055 262);
+    --fg: oklch(0.955 0.025 92);
+    --mut: oklch(0.775 0.035 92);
+    --line: oklch(0.36 0.055 262);
+    --ink: oklch(0.55 0.19 262);
+    --onink: oklch(0.985 0.02 92);
+    --hot: var(--hot-dark);
+    --onhot: oklch(0.19 0.05 262);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: oklch(0.215 0.055 262);
+  --fg: oklch(0.955 0.025 92);
+  --mut: oklch(0.775 0.035 92);
+  --line: oklch(0.36 0.055 262);
+  --ink: oklch(0.55 0.19 262);
+  --onink: oklch(0.985 0.02 92);
+  --hot: var(--hot-dark);
+  --onhot: oklch(0.19 0.05 262);
+  color-scheme: dark;
+}
+
+/* Expose the tokens to Tailwind so `bg-ink`, `text-mut`, `border-line`
+   resolve at runtime and follow a theme switch in one step. */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+  --color-mut: var(--mut);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-onink: var(--onink);
+  --color-hot: var(--hot);
+  --color-onhot: var(--onhot);
+
+  --font-sans: var(--font-archivo), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --container-page: var(--page-max);
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* No radii anywhere. No shadows. */
+  a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease, background-color 0.2s ease;
+  }
+
+  a:hover {
+    color: var(--link-hover, var(--hot));
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--hot);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background: var(--hot);
+    color: var(--onhot);
+  }
+}
+
+/* ==========================================================================
+   Layout — sections are full-bleed, only their inner wrapper is capped
+   ========================================================================== */
+@layer components {
+  .frame {
+    max-width: var(--page-max);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .field {
+    padding-block: var(--space-field);
+  }
+
+  .field-paper {
+    background: var(--bg);
+    color: var(--fg);
+    --field-bg: var(--bg);
+    --link-hover: var(--hot);
+  }
+
+  .field-ink {
+    background: var(--ink);
+    color: var(--onink);
+    --field-bg: var(--ink);
+    /* On coloured fields, hover goes to the field's opposite. */
+    --link-hover: var(--hot);
+  }
+
+  .field-hot {
+    background: var(--hot);
+    color: var(--onhot);
+    --field-bg: var(--hot);
+    --link-hover: var(--ink);
+  }
+
+  /* Two columns, collapsing under ~700px with no breakpoint rules. */
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--col-gap);
+  }
+
+  .rule-hair {
+    border-top: 1px solid var(--line);
+  }
+
+  .rule-ink {
+    border-top: 2px solid currentColor;
+  }
+
+  /* ------------------------------------------------------------------ Type */
+  .t-eyebrow,
+  .t-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+
+  .t-meta {
+    letter-spacing: 0.14em;
+  }
+
+  .t-statement {
+    font-weight: 800;
+    font-size: clamp(36px, 7.5vw, 112px);
+    line-height: 0.92;
+    letter-spacing: -0.045em;
+    text-transform: uppercase;
+    max-width: 23ch;
+    text-wrap: balance;
+  }
+
+  .t-project-title {
+    font-weight: 800;
+    font-size: clamp(30px, 4.4vw, 66px);
+    line-height: 0.94;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+  }
+
+  .t-lead {
+    font-weight: 400;
+    font-size: clamp(20px, 2.4vw, 34px);
+    line-height: 1.42;
+    letter-spacing: -0.015em;
+    max-width: 48ch;
+    text-wrap: pretty;
+  }
+
+  .t-body {
+    font-weight: 400;
+    font-size: clamp(16.5px, 1.4vw, 20px);
+    line-height: 1.62;
+    max-width: 52ch;
+    text-wrap: pretty;
+  }
+
+  .t-body-cont {
+    font-weight: 400;
+    font-size: clamp(15.5px, 1.3vw, 18px);
+    line-height: 1.62;
+    max-width: 52ch;
+    color: var(--mut);
+    text-wrap: pretty;
+  }
+
+  .t-numeral {
+    font-weight: 800;
+    font-size: clamp(26px, 2.8vw, 40px);
+    letter-spacing: -0.035em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Secondary text on a coloured field: a mix of the on-colour, never a
+     separate token. */
+  .t-on-mut {
+    color: color-mix(in oklab, currentColor 80%, var(--field-bg, transparent));
+  }
+
+  /* -------------------------------------------------------------- Controls */
+  .btn-ghost {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    background: transparent;
+    color: inherit;
+    border: 1px solid color-mix(in oklab, currentColor 45%, transparent);
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: color 0.2s ease, background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .btn-ghost:hover {
+    background: var(--hot);
+    color: var(--onhot);
+    border-color: var(--hot);
+  }
+
+  /* The theme button names the theme it switches TO. Visibility mirrors the
+     token cascade above exactly, so the label is right on first paint. */
+  .theme-label-light {
+    display: none;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-label-dark {
+      display: none;
+    }
+
+    :root:not([data-theme="light"]) .theme-label-light {
+      display: inline;
+    }
+  }
+
+  :root[data-theme="dark"] .theme-label-dark {
+    display: none;
+  }
+
+  :root[data-theme="dark"] .theme-label-light {
+    display: inline;
+  }
+
+  :root[data-theme="light"] .theme-label-dark {
+    display: inline;
+  }
+
+  :root[data-theme="light"] .theme-label-light {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   Motion
+   `.reveal-ready` is set by the boot script, so without JavaScript nothing
+   is ever left hidden.
+   ========================================================================== */
+@layer utilities {
+  [data-reveal] {
+    transition: opacity 0.75s var(--ease-out), transform 0.75s var(--ease-out);
+  }
+
+  .reveal-ready [data-reveal] {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .reveal-ready [data-reveal].is-revealed {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* The only entrance animation on load. */
+  .hero-rule {
+    height: clamp(14px, 2.2vw, 30px);
+    background: var(--hot);
+    transform-origin: left;
+  }
+
+  .reveal-ready .hero-rule {
+    animation: hero-wipe 1s var(--ease-out) 0.25s both;
+  }
+
+  @keyframes hero-wipe {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-ready [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+
+  .reveal-ready .hero-rule {
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

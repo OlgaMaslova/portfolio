@@ -7,7 +7,7 @@ export const site = {
   // Canonical origin. Override with NEXT_PUBLIC_SITE_URL when a custom domain lands.
   url: (process.env.NEXT_PUBLIC_SITE_URL ?? "https://olgamaslova.github.io").replace(/\/$/, ""),
   description:
-    "I build AI systems that run in production, and measure them until they earn it. Physics PhD first, ten years of shipping since.",
+    "I build AI systems that run in production. Physics PhD at first, ten years of shipping since.",
   github: "https://github.com/OlgaMaslova",
   linkedin: "https://www.linkedin.com/in/olgamaslova23/",
   // Published in plain text in the header and footer markup, so it is

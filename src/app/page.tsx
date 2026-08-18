@@ -116,7 +116,7 @@ export default function Home() {
       <section className="field-paper pb-[var(--space-field)] pt-[var(--space-hero)]">
         <div className="frame">
           <h1 className="t-statement" data-reveal>
-            I build AI systems that run in <span className="text-hot">production</span> and measure them until they earn it.
+            Building AI systems. From a <span className="text-hot">problem</span> to production.
           </h1>
         </div>
         <div className="mt-[var(--space-entry)] hero-rule" />
@@ -129,7 +129,7 @@ export default function Home() {
         </p>
         <p className="t-lead mt-8" data-reveal>
           I take products from messy problem to reliable production system — end to end. I work across product, architecture, full-stack engineering, DevOps, and ML, using AI throughout the development process while keeping ownership and judgment to myself.
-          Ten years of production software, as a tech lead and co-founder. Physics PhD first.
+          Ten years of production software, as a tech lead and co-founder. Physics PhD before that.
         </p>
       </Field>
 
